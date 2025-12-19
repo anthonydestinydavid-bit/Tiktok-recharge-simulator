@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Live Gift Recharge Simulator — Demo</title>
+  <meta name="description" content="A local simulator for TikTok-like live gifts: mock wallets, gift catalog, real-time feed, admin simulator, analytics and webhook testing." />
+  <link rel="icon" href="data:;base64,iVBORw0KGgo=">
+  <style>
+    :root{
+      --bg:#f6f7fb; --card:#ffffff; --accent:#0ea5ff; --muted:#6b7280; --radius:12px;
+      --maxw:1050px;
+    }
+    *{box-sizing:border-box}
+    body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial;color:#0f172a;background:var(--bg);-webkit-font-smoothing:antialiased}
+    header{background:linear-gradient(90deg, rgba(14,165,255,0.08), rgba(79,70,229,0.03));padding:36px 20px 24px}
+    .container{max-width:var(--maxw);margin:0 auto}
+    .hero{display:flex;gap:28px;align-items:center;justify-content:space-between}
+    .hero-left{flex:1}
+    h1{margin:0;font-size:28px;line-height:1.05}
+    p.lead{margin:12px 0 18px;color:var(--muted);max-width:58ch}
+    .buttons{display:flex;gap:12px;flex-wrap:wrap}
+    .btn{display:inline-flex;align-items:center;gap:8px;padding:10px 14px;border-radius:10px;border:1px solid rgba(15,23,42,0.06);background:white;color:#0f172a;text-decoration:none;font-weight:600;box-shadow:0 6px 18px rgba(16,24,40,0.04)}
+    .btn.primary{background:linear-gradient(90deg,var(--accent),#7c3aed);color:white;border:0}
+    .hero-right{width:420px;min-width:260px}
+    .card{background:var(--card);border-radius:var(--radius);padding:16px;box-shadow:0 6px 20px rgba(2,6,23,0.06)}
+    .features{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:18px}
+    .feature{background:#fbfdff;border-radius:10px;padding:12px;border:1px solid rgba(15,23,42,0.03);font-size:14px}
+    main{max-width:var(--maxw);margin:28px auto;padding:0 20px}
+    section{display:grid;grid-template-columns:1fr 420px;gap:20px;align-items:start}
+    .screenshot{height:320px;border-radius:12px;background:linear-gradient(180deg,#fff 0%, #fbfdff 100%);display:flex;align-items:center;justify-content:center;color:var(--muted);font-weight:600;border:1px dashed rgba(15,23,42,0.06)}
+    footer{padding:28px 20px;color:var(--muted);text-align:center}
+    pre.cmd{background:#0b1220;color:#e6eef8;padding:12px;border-radius:8px;overflow:auto;font-size:13px}
+    @media (max-width:920px){
+      .hero{flex-direction:column;align-items:flex-start}
+      section{grid-template-columns:1fr}
+      .hero-right{width:100%}
+      .features{grid-template-columns:1fr}
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="container hero">
+      <div class="hero-left">
+        <h1>Live Gift Recharge Simulator</h1>
+        <p class="lead">
+          A local/demo simulator for live-stream gift flows — mock wallets & recharge, gift catalog, real-time feed (Socket.IO), admin simulator to inject viewers/gifts, analytics, and webhook testing. Perfect for QA, demos, and UI/overlay development.
+        </p>
+
+        <div class="buttons">
+          <!-- Primary: open simulator (assumes client served on same host /) -->
+          <a class="btn primary" href="/" id="open-simulator" title="Open the simulator app">Open Simulator</a>
+
+          <!-- Docker quick-run -->
+          <a class="btn" href="#" id="docker-run" title="Docker Compose instructions">Run with Docker</a>
+
+          <!-- GitHub placeholder (replace with your repo link if available) -->
+          <a class="btn" href="#" id="repo-link" title="Project repository">GitHub Repo</a>
+        </div>
+
+        <div class="features" style="margin-top:18px">
+          <div class="feature">Mock wallet & one-click recharge</div>
+          <div class="feature">Gift catalog with prices & streamer value</div>
+          <div class="feature">Real-time feed & overlay-ready events (Socket.IO)</div>
+          <div class="feature">Admin simulator for load & webhook forwarding</div>
+        </div>
+      </div>
+
+      <div class="hero-right">
+        <div class="card">
+          <strong>Quick demo</strong>
+          <p style="margin:10px 0 6px;color:var(--muted);font-size:13px">Start locally (recommended):</p>
+          <pre class="cmd"># from project root
+docker-compose up --build
+# frontend: http://localhost:5173
+# api: http://localhost:4000</pre>
+          <p style="margin:10px 0 0;font-size:13px;color:var(--muted)">
+            Or run server and client separately (Node + Vite) — see README for development tips.
+          </p>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+    <section>
+      <div>
+        <h3>What you'll get</h3>
+        <p style="color:var(--muted);max-width:64ch">This simulator is delivered as a small full-stack project (Express + Socket.IO backend, React + TypeScript frontend). It provides realistic event flows for UI, overlays, webhook handling, and load-testing scenarios without touching real payment systems.</p>
+
+        <h4 style="margin-top:18px">Use cases</h4>
+        <ul style="color:var(--muted)">
+          <li>Stream overlay development — listen to gift events and animate accordingly.</li>
+          <li>QA: validate handle of gift bursts, error cases, and latency.</li>
+          <li>Stakeholder demos — show gifting UX and revenue simulation.</li>
+          <li>Webhook consumers — test your endpoint receiving gift callbacks.</li>
+        </ul>
+
+        <h4 style="margin-top:16px">Next steps</h4>
+        <ol style="color:var(--muted)">
+          <li>Run with Docker (recommended) or start server & client locally.</li>
+          <li>Open the simulator, use Admin panel to simulate viewers/gifts.</li>
+          <li>Use webhook-simulate to forward a gift.event to your endpoint for integration tests.</li>
+        </ol>
+      </div>
+
+      <aside>
+        <div class="card">
+          <h4>Live preview</h4>
+          <div class="screenshot">Simulator UI preview (open app to interact)</div>
+          <hr style="margin:12px 0">
+          <strong style="display:block;margin-bottom:8px">Config & Tips</strong>
+          <p style="margin:0 0 10px;color:var(--muted);font-size:13px">Use Admin → Config to add latency or simulated errors to reproduce edge cases. Persisting data and auth can be added on request.</p>
+        </div>
+      </aside>
+    </section>
+  </main>
+
+  <footer>
+    <div class="container">
+      <small>Built as a local prototype — no real payments or TikTok integrations. Replace links below with your repo/hosted URLs.</small>
+    </div>
+  </footer>
+
+  <script>
+    // Quick behaviors: fill links if you run on localhost docker defaults
+    document.getElementById('docker-run').addEventListener('click', (e) => {
+      e.preventDefault();
+      alert("Run in project root:\n\ndocker-compose up --build\n\nThen open http://localhost:5173");
+    });
+
+    // If the page isn't served from the app host, the Open button still tries localhost:5173
+    (function(){
+      const openBtn = document.getElementById('open-simulator');
+      // If current host is not the same as Docker default, point to localhost:5173
+      const prefer = location.hostname === 'localhost' || location.hostname === '127.0.0.1';
+      if (!prefer) {
+        openBtn.setAttribute('href','http://localhost:5173');
+      }
+      // Replace repo link placeholder if you have a repo URL (replace below)
+      const repoLink = document.getElementById('repo-link');
+      repoLink.href = '#';
+      repoLink.addEventListener('click', (ev) => {
+        ev.preventDefault();
+        alert('Replace this link with your GitHub repo URL.');
+      });
+    })();
+  </script>
+</body>
+</html>
