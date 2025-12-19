@@ -1,0 +1,17 @@
+server {
+  listen       80;
+  server_name  localhost;
+
+  root   /usr/share/nginx/html;
+  index  index.html;
+
+  # Serve static files and fallback to index.html for SPA routing
+  location / {
+    try_files $uri $uri/ /index.html;
+  }
+
+  # Optional: proxy /api to backend if you want same origin (not required with compose networking)
+  # location /api/ {
+  #   proxy_pass http://server:4000/api/;
+  # }
+}

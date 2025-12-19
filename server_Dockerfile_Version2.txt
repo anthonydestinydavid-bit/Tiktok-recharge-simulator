@@ -1,0 +1,18 @@
+# Server Dockerfile (prototype - runs TypeScript entry via ts-node)
+FROM node:18
+
+# Create app directory
+WORKDIR /app
+
+# Copy package files and install (including dev deps for ts-node & typescript)
+COPY package*.json ./
+RUN npm install
+
+# Copy source
+COPY . .
+
+# Expose server port
+EXPOSE 4000
+
+# Run the TypeScript entry file using ts-node (works for prototype)
+CMD ["npx", "ts-node", "src/index.ts"]

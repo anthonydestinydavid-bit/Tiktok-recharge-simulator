@@ -1,0 +1,143 @@
+import React, { useEffect, useState, useRef } from "react";
+import axios from "axios";
+import { io } from "socket.io-client";
+
+const API_ROOT = import.meta.env.VITE_API_ROOT || "http://localhost:4000";
+
+type Gift = {
+  id: string;
+  name: string;
+  priceCoins: number;
+  streamerValueCoins: number;
+  emoji?: string;
+};
+
+type GiftEvent = {
+  id: string;
+  timestamp: number;
+  gift: Gift;
+  fromUserId: string;
+  toStreamerId: string;
+  quantity: number;
+};
+
+export default function App() {
+  const [gifts, setGifts] = useState<Gift[]>([]);
+  const [wallet, setWallet] = useState(0);
+  const [userId] = useState("demo-viewer");
+  const [streamerId] = useState("demo-streamer");
+  const [selectedGift, setSelectedGift] = useState<string | null>(null);
+  const [feed, setFeed] = useState<GiftEvent[]>([]);
+  const socketRef = useRef<any>(null);
+
+  useEffect(() => {
+    axios.get(`${API_ROOT}/api/gifts`).then((r) => setGifts(r.data));
+    axios.get(`${API_ROOT}/api/wallet`, { params: { userId } }).then((r) => setWallet(r.data.coins));
+    // socket
+    socketRef.current = io(API_ROOT);
+    socketRef.current.on("connect", () => {});
+    socketRef.current.on("gift.event", (ev: GiftEvent) => {
+      setFeed((s) => [ev, ...s].slice(0, 200));
+    });
+    return () => {
+      socketRef.current?.disconnect();
+    };
+  }, []);
+
+  async function recharge() {
+    const r = await axios.post(`${API_ROOT}/api/recharge`, { userId, coins: 1000 });
+    setWallet(r.data.coins);
+  }
+
+  async function sendGift() {
+    if (!selectedGift) return alert("Pick a gift");
+    try {
+      const r = await axios.post(`${API_ROOT}/api/send-gift`, {
+        fromUserId: userId,
+        toStreamerId: streamerId,
+        giftId: selectedGift,
+        quantity: 1
+      });
+      setWallet(r.data.wallet);
+    } catch (e: any) {
+      alert(e?.response?.data?.error || "Error sending gift");
+    }
+  }
+
+  return (
+    <div>
+      <h2>Live Gift Recharge Simulator</h2>
+      <div className="app">
+        <div className="card">
+          <h3>Wallet</h3>
+          <p>User: <strong>{userId}</strong></p>
+          <p>Coins: <strong>{wallet}</strong></p>
+          <button onClick={recharge}>Mock Recharge +1000 coins</button>
+          <hr />
+          <h4>Gift Catalog</h4>
+          <div>
+            {gifts.map((g) => (
+              <div key={g.id} style={{display:"flex", justifyContent:"space-between", padding:"6px 0"}}>
+                <div>
+                  <strong>{g.emoji || ""} {g.name}</strong>
+                  <div style={{fontSize:12, color:"#666"}}>{g.priceCoins} coins</div>
+                </div>
+                <div>
+                  <button onClick={() => setSelectedGift(g.id)} style={{ marginRight: 8 }}>
+                    Select
+                  </button>
+                  <button className="primary" onClick={() => { setSelectedGift(g.id); sendGift(); }}>Send</button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="card">
+          <h3>Live Feed (real-time)</h3>
+          <div>
+            {feed.length === 0 && <div style={{color:"#666"}}>No gifts yet — send one or use Admin to simulate.</div>}
+            {feed.map((f) => (
+              <div key={f.id} className="feed-item">
+                <div style={{fontSize:22}}>{f.gift.emoji}</div>
+                <div style={{flex:1}}>
+                  <div><strong>{f.fromUserId}</strong> sent <strong>{f.quantity}× {f.gift.name}</strong> to <strong>{f.toStreamerId}</strong></div>
+                  <div style={{fontSize:12, color:"#666"}}>{new Date(f.timestamp).toLocaleTimeString()}</div>
+                </div>
+                <div style={{textAlign:"right"}}>{f.gift.priceCoins * f.quantity} coins</div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="card">
+          <h3>Admin / Simulator</h3>
+          <p>Streamer: <strong>{streamerId}</strong></p>
+          <button onClick={async () => {
+            const r = await axios.post(`${API_ROOT}/api/admin/simulate`, { streamerId, viewers: 20, giftsPerMinute: 60, durationSeconds: 20 });
+            alert("Started sim job: " + r.data.jobId);
+          }}>Simulate 20 viewers, 60 GPM, 20s</button>
+          <hr />
+          <h4>Config</h4>
+          <button onClick={async () => {
+            await axios.post(`${API_ROOT}/api/admin/config`, { simulateLatencyMs: 500 });
+            alert("Set latency to 500ms (simulated)");
+          }}>Simulate 500ms latency</button>
+          <button onClick={async () => {
+            await axios.post(`${API_ROOT}/api/admin/config`, { simulateLatencyMs: 0 });
+            alert("Latency disabled");
+          }} style={{marginLeft:8}}>Disable latency</button>
+          <hr />
+          <h4>Webhook test</h4>
+          <p style={{fontSize:13, color:"#666"}}>Forward next gift event to a URL (for testing callbacks).</p>
+          <button onClick={async () => {
+            const url = prompt("Forward URL (example: https://webhook.site/your-id)");
+            if (!url) return;
+            await axios.post(`${API_ROOT}/api/webhook-simulate`, { forwardUrl: url });
+            alert("Will forward next gift to " + url);
+          }}>Simulate webhook</button>
+        </div>
+      </div>
+    </div>
+  );
+}

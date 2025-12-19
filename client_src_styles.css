@@ -1,0 +1,6 @@
+body { font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial; margin: 0; padding: 16px; background: #f7f7fb; color: #111; }
+.app { display: grid; grid-template-columns: 360px 1fr 320px; gap: 16px; align-items: start; }
+.card { background: white; border-radius: 8px; padding: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+button { padding: 8px 12px; border-radius: 6px; border: 1px solid #ddd; background: #fff; cursor: pointer; }
+button.primary { background: #1da1f2; color: white; border-color: #1da1f2; }
+.feed-item { display:flex; gap:8px; align-items:center; padding:8px 0; border-bottom:1px dashed #eee }
